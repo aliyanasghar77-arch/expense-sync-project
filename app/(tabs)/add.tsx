@@ -1,72 +1,43 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useContext, useState } from "react";
-import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { useState, useContext } from "react";
+import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import { ExpenseContext } from "../_layout";
+import { useRouter } from "expo-router";
 
 export default function AddExpense() {
   const { expenses, setExpenses } = useContext(ExpenseContext);
+  const router = useRouter();
 
-  const [amount, setAmount] = useState("");
   const [title, setTitle] = useState("");
-  const [note, setNote] = useState("");
+  const [amount, setAmount] = useState("");
 
-  const saveExpense = async () => {
-    if (!amount || !title) {
-      Alert.alert("Error", "Please enter amount and title");
-      return;
-    }
-
+  const saveExpense = () => {
     const newExpense = {
-      id: Date.now().toString(),
-      amount: Number(amount),
+      id: Date.now(),
       title,
-      note,
+      amount: parseFloat(amount),
     };
 
-    try {
-      // update React context instantly
-      const updated = [...expenses, newExpense];
-      setExpenses(updated);
-
-      // save to storage
-      await AsyncStorage.setItem("expenses", JSON.stringify(updated));
-
-      Alert.alert("Success", "Expense saved!");
-
-      // clear form
-      setAmount("");
-      setTitle("");
-      setNote("");
-    } catch (error) {
-      console.log(error);
-      Alert.alert("Error", "Could not save expense");
-    }
+    setExpenses([...expenses, newExpense]);
+    router.push("/explore");
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add Expense</Text>
+      <Text style={styles.heading}>Add Expense</Text>
 
       <TextInput
-        placeholder="Title (Food, Travel, Shopping...)"
         style={styles.input}
+        placeholder="Expense Title"
         value={title}
         onChangeText={setTitle}
       />
 
       <TextInput
+        style={styles.input}
         placeholder="Amount"
         keyboardType="numeric"
-        style={styles.input}
         value={amount}
         onChangeText={setAmount}
-      />
-
-      <TextInput
-        placeholder="Note (optional)"
-        style={styles.input}
-        value={note}
-        onChangeText={setNote}
       />
 
       <Button title="Save Expense" onPress={saveExpense} />
@@ -75,22 +46,13 @@ export default function AddExpense() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#ffffff",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
+  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  heading: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: 12,
-    borderRadius: 8,
+    padding: 10,
     marginBottom: 15,
+    borderRadius: 8,
   },
 });

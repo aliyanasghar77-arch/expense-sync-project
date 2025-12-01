@@ -1,10 +1,7 @@
 import { Stack } from "expo-router";
 import { createContext, useState } from "react";
 
-export const ExpenseContext = createContext({
-  expenses: [],
-  setExpenses: (value: any) => {},
-});
+export const ExpenseContext = createContext(null);
 
 export default function RootLayout() {
   const [expenses, setExpenses] = useState([]);
